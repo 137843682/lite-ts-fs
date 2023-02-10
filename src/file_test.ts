@@ -1,8 +1,26 @@
 import { deepStrictEqual, strictEqual } from 'assert';
+import { join } from 'path';
 
 import { FsFile as Self } from './file';
 
 describe('src/file.ts', () => {
+    describe('.copyTo(opts: string | string[] | CopyOption)', () => {
+        it('ok', async () => {
+            const sourceFile = new Self(null, join('src', 'index.ts'));
+
+            await sourceFile.copyTo({
+                paths: ['src', 'index-test'],
+                isForce: true
+            });
+
+            const targetFile = new Self(null, join('src', 'index-test'));
+            const targetExists = await targetFile.exists();
+            strictEqual(targetExists, true);
+
+            await targetFile.remove();
+        });
+    });
+
     describe('.moveTo(v: any)', () => {
         it('ok', async () => {
             const sourceFile = new Self(null, './file-test.txt');

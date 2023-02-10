@@ -5,6 +5,23 @@ import { FsDirectory as Self } from './directory';
 import { FsFileFactory } from './file-factory';
 
 describe('src/directory.ts', () => {
+    describe('.copyTo(opts: string | string[] | CopyOption)', () => {
+        it('ok', async () => {
+            const fsFactory = new FsFileFactory();
+            const self = new Self(fsFactory, join('src'));
+
+            const copyDir = new Self(null, 'src-copy');
+            await copyDir.create();
+
+            await self.copyTo('src-copy');
+
+            const exists = await copyDir.exists();
+            strictEqual(exists, true);
+
+            await copyDir.remove();
+        });
+    });
+
     describe('.create()', () => {
         it('ok', async () => {
             const dir = join('./test-dir');

@@ -2,6 +2,7 @@ import { existsSync } from 'fs';
 import { rename } from 'fs/promises';
 import { basename, join } from 'path';
 
+import { CopyOption } from './copy-option';
 import { IFileEntry } from './i-file-entry';
 import { IFileFactory } from './i-file-factory';
 
@@ -13,6 +14,22 @@ export abstract class FsFileEntryBase implements IFileEntry {
         public path: string,
     ) {
         this.name = basename(path);
+    }
+
+    public async copyTo(opts: string | string[] | CopyOption) {
+        let data: CopyOption;
+        if (typeof opts === 'string') {
+            data = {
+                paths: [opts]
+            };
+        } else if (Array.isArray(opts)) {
+            data = {
+                paths: opts
+            };
+        } else {
+            data = opts;
+        }
+        await this._copyTo(data);
     }
 
     public async exists() {
@@ -35,4 +52,6 @@ export abstract class FsFileEntryBase implements IFileEntry {
     }
 
     public abstract remove(): Promise<void>;
+
+    protected abstract _copyTo(opts: CopyOption): Promise<void>;
 }
