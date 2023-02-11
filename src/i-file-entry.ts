@@ -1,4 +1,4 @@
-import { CopyOption } from './copy-option';
+import { ICopyOption } from './i-copy-option';
 import { IFileFactory } from './i-file-factory';
 
 export interface IFileEntry {
@@ -12,7 +12,7 @@ export interface IFileEntry {
      * 
      * @param opts 
      */
-    copyTo(opts: string | string[] | CopyOption): Promise<void>;
+    copyTo(opts: string | string[] | ICopyOption): Promise<void>;
     /**
      * 是否存在
      */

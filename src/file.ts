@@ -3,23 +3,15 @@ import { copyFile, readFile, unlink, writeFile } from 'fs/promises';
 import { load } from 'js-yaml';
 import { extname, join } from 'path';
 
-import { CopyOption } from './copy-option';
-import { FsFileEntryBase } from './file-entry-base';
+import { FileEntryBase } from './file-entry-base';
+import { ICopyOption } from './i-copy-option';
 import { IFile } from './i-file';
 
-export class FsFile extends FsFileEntryBase implements IFile {
+export class File extends FileEntryBase implements IFile {
     private m_Ext: string;
     public get ext() {
         this.m_Ext ??= extname(this.path);
         return this.m_Ext;
-    }
-
-    protected async _copyTo(opts: CopyOption) {
-        await copyFile(
-            this.path,
-            join(...opts.paths),
-            opts.isForce ? 0 : constants.COPYFILE_EXCL
-        );
     }
 
     public async moveTo(v: any) {
@@ -51,5 +43,13 @@ export class FsFile extends FsFileEntryBase implements IFile {
     public async write(v: any) {
         if (typeof v == 'string')
             await writeFile(this.path, v);
+    }
+
+    protected async doCopyTo(opts: ICopyOption) {
+        await copyFile(
+            this.path,
+            join(...opts.paths),
+            opts.isForce ? 0 : constants.COPYFILE_EXCL
+        );
     }
 }

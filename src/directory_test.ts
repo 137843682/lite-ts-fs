@@ -1,13 +1,13 @@
 import { notStrictEqual, strictEqual } from 'assert';
 import { join } from 'path';
 
-import { FsDirectory as Self } from './directory';
-import { FsFileFactory } from './file-factory';
+import { Directory as Self } from './directory';
+import { FileFactory } from './file-factory';
 
 describe('src/directory.ts', () => {
     describe('.copyTo(opts: string | string[] | CopyOption)', () => {
         it('ok', async () => {
-            const fsFactory = new FsFileFactory();
+            const fsFactory = new FileFactory();
             const self = new Self(fsFactory, join('src'));
 
             const copyDir = new Self(null, 'src-copy');
@@ -55,7 +55,7 @@ describe('src/directory.ts', () => {
 
     describe('.moveTo()', () => {
         it('ok', async () => {
-            const fsFactory = new FsFileFactory();
+            const fsFactory = new FileFactory();
             const sourceDir = new Self(fsFactory, './source-dir');
             const sourceSubDir = new Self(fsFactory, './source-dir/1');
             await sourceSubDir.create(true);

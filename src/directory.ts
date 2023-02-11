@@ -2,14 +2,14 @@ import { Stats } from 'fs';
 import { mkdir, readdir, rm, stat } from 'fs/promises';
 import { join } from 'path';
 
-import { CopyOption } from './copy-option';
-import { FsFile, } from './file';
-import { FsFileEntryBase } from './file-entry-base';
+import { File, } from './file';
+import { FileEntryBase } from './file-entry-base';
+import { ICopyOption } from './i-copy-option';
 import { IDirectory } from './i-directory';
-import { IFileEntry } from './i-file-entry';
 import { IFile } from './i-file';
+import { IFileEntry } from './i-file-entry';
 
-export class FsDirectory extends FsFileEntryBase implements IDirectory {
+export class Directory extends FileEntryBase implements IDirectory {
     public async create(recursive?: boolean) {
         await mkdir(this.path, {
             recursive: recursive
@@ -18,13 +18,13 @@ export class FsDirectory extends FsFileEntryBase implements IDirectory {
 
     public async findDirectories() {
         return await this.scan<IDirectory>((fileStat, filePath) => {
-            return fileStat.isDirectory() ? new FsDirectory(this.factory, filePath) : null;
+            return fileStat.isDirectory() ? new Directory(this.factory, filePath) : null;
         });
     }
 
     public async findFiles() {
         return await this.scan<IFile>((fileStat, filePath) => {
-            return fileStat.isFile() ? new FsFile(this.factory, filePath) : null;
+            return fileStat.isFile() ? new File(this.factory, filePath) : null;
         });
     }
 
@@ -67,7 +67,7 @@ export class FsDirectory extends FsFileEntryBase implements IDirectory {
         });
     }
 
-    protected async _copyTo(opts: CopyOption) {
+    protected async doCopyTo(opts: ICopyOption) {
         const files = await this.findFiles();
         for (const r of files) {
             await r.copyTo({
