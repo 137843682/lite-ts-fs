@@ -2,6 +2,7 @@ import { Stats } from 'fs';
 import { mkdir, readdir, rm, stat } from 'fs/promises';
 import { join } from 'path';
 
+import { CopyOption } from './copy-option';
 import { FsFile, } from './file';
 import { FsFileEntryBase } from './file-entry-base';
 import { IDirectory } from './i-directory';
@@ -64,6 +65,29 @@ export class FsDirectory extends FsFileEntryBase implements IDirectory {
             force: true,
             recursive: true,
         });
+    }
+
+    protected async _copyTo(opts: CopyOption) {
+        const files = await this.findFiles();
+        for (const r of files) {
+            await r.copyTo({
+                paths: [...opts.paths, r.name],
+                isForce: opts.isForce
+            });
+        }
+
+        const dirs = await this.findDirectories() as IDirectory[];
+        for (const r of dirs) {
+            const dstDir = this.factory.buildDirectory(...opts.paths, r.name);
+            const exists = await dstDir.exists();
+            if (!exists)
+                await dstDir.create();
+
+            await r.copyTo({
+                paths: [dstDir.path],
+                isForce: opts.isForce
+            });
+        }
     }
 
     private async scan<T extends IFileEntry>(buildFunc: (fileStat: Stats, filePath: string) => T) {

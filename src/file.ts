@@ -1,7 +1,9 @@
-import { readFile, unlink, writeFile } from 'fs/promises';
+import { constants } from 'fs';
+import { copyFile, readFile, unlink, writeFile } from 'fs/promises';
 import { load } from 'js-yaml';
-import { extname } from 'path';
+import { extname, join } from 'path';
 
+import { CopyOption } from './copy-option';
 import { FsFileEntryBase } from './file-entry-base';
 import { IFile } from './i-file';
 
@@ -10,6 +12,14 @@ export class FsFile extends FsFileEntryBase implements IFile {
     public get ext() {
         this.m_Ext ??= extname(this.path);
         return this.m_Ext;
+    }
+
+    protected async _copyTo(opts: CopyOption) {
+        await copyFile(
+            this.path,
+            join(...opts.paths),
+            opts.isForce ? 0 : constants.COPYFILE_EXCL
+        );
     }
 
     public async moveTo(v: any) {
