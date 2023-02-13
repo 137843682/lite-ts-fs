@@ -56,11 +56,11 @@ describe('src/directory.ts', () => {
     describe('.moveTo()', () => {
         it('ok', async () => {
             const fsFactory = new FileFactory();
-            const sourceDir = new Self(fsFactory, './source-dir');
-            const sourceSubDir = new Self(fsFactory, './source-dir/1');
+            const sourceDir = new Self(fsFactory, 'source-dir');
+            const sourceSubDir = new Self(fsFactory, join('source-dir', '1'));
             await sourceSubDir.create(true);
 
-            const targetDir = new Self(fsFactory, './target-dir');
+            const targetDir = new Self(fsFactory, 'target-dir');
             await targetDir.create();
 
             await sourceDir.moveTo(targetDir.path);
@@ -78,8 +78,7 @@ describe('src/directory.ts', () => {
 
     describe('.read()', () => {
         it('ok', async () => {
-            const dir = join('./src');
-            const self = new Self(null, dir);
+            const self = new Self(null, join('src'));
             const res = await self.read();
             notStrictEqual(res.length, 0);
         });
