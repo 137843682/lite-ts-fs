@@ -23,15 +23,15 @@ describe('src/file.ts', () => {
 
     describe('.moveTo(v: any)', () => {
         it('ok', async () => {
-            const sourceFile = new Self(null, './file-test.txt');
+            const sourceFile = new Self(null, 'file-test.txt');
             await sourceFile.write('123');
 
-            await sourceFile.moveTo('./file-test-move.txt');
+            await sourceFile.moveTo('file-test-move.txt');
 
             const oldExists = await sourceFile.exists();
             strictEqual(oldExists, false);
 
-            const targetFile = new Self(null, './file-test-move.txt');
+            const targetFile = new Self(null, 'file-test-move.txt');
             const targetExists = await targetFile.exists();
             strictEqual(targetExists, true);
 
@@ -41,7 +41,7 @@ describe('src/file.ts', () => {
 
     describe('.read()', () => {
         it('ok', async () => {
-            const self = new Self(null, './file-test.json');
+            const self = new Self(null, 'file-test.json');
             await self.write(`{"id":"123"}`);
 
             const res = await self.read<{ id: string; }>();
@@ -55,7 +55,7 @@ describe('src/file.ts', () => {
 
     describe('.readString()', () => {
         it('ok', async () => {
-            const self = new Self(null, './file-test.txt');
+            const self = new Self(null, 'file-test.txt');
             await self.write('123');
 
             const res = await self.readString();
@@ -67,7 +67,7 @@ describe('src/file.ts', () => {
 
     describe('.readYaml()', () => {
         it('ok', async () => {
-            const self = new Self(null, './file-test.yaml');
+            const self = new Self(null, 'file-test.yaml');
             await self.write(`service: fs`);
 
             const res = await self.readYaml<{ service: string; }>();

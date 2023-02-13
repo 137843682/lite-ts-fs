@@ -10,9 +10,9 @@ npm install lite-ts-fs
 ## 使用
 
 ```typescript
-import { FsFileFactory } from 'lite-ts-fs';
+import { FileFactory } from 'lite-ts-fs';
 
-const factory = new FsFileFactory();
+const factory = new FileFactory();
 const file = await factory.buildFile('./test.txt');
 await file.readString(); // 读取文件内容
 
