@@ -1,8 +1,6 @@
-import { ICopyOption } from './i-copy-option';
-import { IFileFactory } from './i-file-factory';
+import { CopyOption } from './copy-option';
 
 export interface IFileEntry {
-    readonly factory: IFileFactory,
     readonly name: string;
     readonly path: string;
     /**
@@ -12,7 +10,7 @@ export interface IFileEntry {
      * 
      * @param opts 
      */
-    copyTo(opts: string | string[] | ICopyOption): Promise<void>;
+    copyTo(opts: string | string[] | CopyOption): Promise<void>;
     /**
      * 是否存在
      */

@@ -2,9 +2,9 @@ import { Stats } from 'fs';
 import { mkdir, readdir, rm, stat } from 'fs/promises';
 import { join } from 'path';
 
+import { CopyOption } from './copy-option';
 import { File, } from './file';
 import { FileEntryBase } from './file-entry-base';
-import { ICopyOption } from './i-copy-option';
 import { IDirectory } from './i-directory';
 import { IFile } from './i-file';
 import { IFileEntry } from './i-file-entry';
@@ -18,13 +18,13 @@ export class Directory extends FileEntryBase implements IDirectory {
 
     public async findDirectories() {
         return await this.scan<IDirectory>((fileStat, filePath) => {
-            return fileStat.isDirectory() ? new Directory(this.factory, filePath) : null;
+            return fileStat.isDirectory() ? new Directory(filePath, this.factory) : null;
         });
     }
 
     public async findFiles() {
         return await this.scan<IFile>((fileStat, filePath) => {
-            return fileStat.isFile() ? new File(this.factory, filePath) : null;
+            return fileStat.isFile() ? new File(filePath, this.factory) : null;
         });
     }
 
@@ -34,7 +34,7 @@ export class Directory extends FileEntryBase implements IDirectory {
             const childDirs = await this.findDirectories();
             for (const r of childDirs) {
                 await r.moveTo(
-                    dir.factory.buildDirectory(
+                    this.factory.buildDirectory(
                         [dir.path, r.name].join('/')
                     )
                 );
@@ -43,7 +43,7 @@ export class Directory extends FileEntryBase implements IDirectory {
             const childFiles = await this.findFiles();
             const tasks = childFiles.map(r => {
                 return r.moveTo(
-                    dir.factory.buildFile(
+                    this.factory.buildFile(
                         [dir.path, r.name].join('/')
                     )
                 );
@@ -67,7 +67,7 @@ export class Directory extends FileEntryBase implements IDirectory {
         });
     }
 
-    protected async doCopyTo(opts: ICopyOption) {
+    protected async doCopyTo(opts: CopyOption) {
         const files = await this.findFiles();
         for (const r of files) {
             await r.copyTo({

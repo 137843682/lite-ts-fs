@@ -3,8 +3,8 @@ import { copyFile, readFile, unlink, writeFile } from 'fs/promises';
 import { load } from 'js-yaml';
 import { extname, join } from 'path';
 
+import { CopyOption } from './copy-option';
 import { FileEntryBase } from './file-entry-base';
-import { ICopyOption } from './i-copy-option';
 import { IFile } from './i-file';
 
 export class File extends FileEntryBase implements IFile {
@@ -45,7 +45,7 @@ export class File extends FileEntryBase implements IFile {
             await writeFile(this.path, v);
     }
 
-    protected async doCopyTo(opts: ICopyOption) {
+    protected async doCopyTo(opts: CopyOption) {
         await copyFile(
             this.path,
             join(...opts.paths),
