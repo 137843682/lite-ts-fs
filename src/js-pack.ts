@@ -8,7 +8,7 @@ const exportReg = /["|'](.*)["|']/;
 const ignoreLine = 'export {};';
 const importReg = /import.*["|'](.*)["|']/;
 
-export class Jspack {
+export class JsPack {
     /**
      * 文件工厂
      */

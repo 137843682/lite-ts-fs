@@ -1,9 +1,9 @@
 import { FileFactory } from './file-factory';
-import { Jspack } from './jspack';
+import { JsPack } from './js-pack';
 
 describe('src/jspack.ts', () => {
     it('getDirContent', async () => {
-        const jspack = new Jspack();
+        const jspack = new JsPack();
         const content = await jspack.getDirContent('dist');
         const fileFactory = new FileFactory();
         const pkg = await fileFactory.buildFile('package.json').read<{ name: string; }>();
