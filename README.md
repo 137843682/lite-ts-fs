@@ -19,3 +19,16 @@ await file.readString(); // 读取文件内容
 const dir = await factory.buildDirectory('./test');
 await dir.create(true); // 创建文件，参数为true时递归创建
 ```
+### 构建库.d.ts文件使用方法
+```typescript
+import { Jspack,FileFactory } from 'lite-ts-fs';
+
+const jspack = new Jspack();
+const content = await jspack.getDirContent('dist');
+const fileFactory = new FileFactory();
+const pkg = await fileFactory.buildFile('package.json').read<{ name: string; }>();
+await fileFactory.buildFile(`${pkg.name}.d.ts`).write(
+    content.join('\n').replace(/export\ /g, '')
+        .replace(/moment\.unitOfTime\.StartOf/g, 'string')
+);
+```
