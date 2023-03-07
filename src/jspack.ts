@@ -1,11 +1,12 @@
 import { join } from 'path';
+
 import { FileFactory } from './file-factory';
 import { FileFactoryBase } from './file-factory-base';
 
 const exportReg = /["|'](.*)["|']/;
-const importReg = /import.*["|'](.*)["|']/;
 // 要过滤的行
 const ignoreLine = 'export {};';
+const importReg = /import.*["|'](.*)["|']/;
 
 export class Jspack {
     /**
