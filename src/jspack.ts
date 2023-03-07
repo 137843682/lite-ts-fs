@@ -1,17 +1,21 @@
 import { join } from 'path';
+import { FileFactory } from './file-factory';
 import { FileFactoryBase } from './file-factory-base';
 
+const exportReg = /["|'](.*)["|']/;
+const importReg = /import.*["|'](.*)["|']/;
+// 要过滤的行
+const ignoreLine = 'export {};';
+
 export class Jspack {
-    private static exportReg = /["|'](.*)["|']/;
-    private static importReg = /import.*["|'](.*)["|']/;
-
-    // 要过滤的行
-    private static ignoreLine = 'export {};';
-    // 已解析的文件
-    private m_ParsedFiles: string[] = [];
-
-    public constructor(private m_FsFactory: FileFactoryBase) { }
-
+    /**
+     * 文件工厂
+     */
+    private m_FsFactory: FileFactoryBase = new FileFactory();
+    /**
+     * 已解析文件
+     */
+    private m_ParsedFiles: string[] = []
     /**
      * 解析整个目录，从该目录底下的 index.d.ts 的 export 内容一个一个解析过去
      * 
@@ -19,20 +23,19 @@ export class Jspack {
      * @returns 
      */
     public async getDirContent(dirPath: string) {
-        const path = join(dirPath, 'index.d.ts');
-        const indexTsFile = this.m_FsFactory.buildFile(path);
+        const indexTsFile = this.m_FsFactory.buildFile(dirPath, 'index.d.ts');
         const dirExists = await indexTsFile.exists();
-        if (!dirExists || this.m_ParsedFiles.includes(path))
-            return '';
+        if (!dirExists || this.m_ParsedFiles.includes(indexTsFile.path))
+            return [];
 
-        this.m_ParsedFiles.push(path);
+        this.m_ParsedFiles.push(indexTsFile.path);
 
         const indexTsFileContent = await indexTsFile.readString();
         const exportsArray = indexTsFileContent.split('\n');
-        let content = '';
+        let content = [];
         for (const line of exportsArray) {
-            const regRes = line.match(Jspack.exportReg);
-            if (regRes && regRes[1]) {
+            const regRes = line.match(exportReg);
+            if (regRes?.[1]) {
                 const paths = regRes[1].split('/');
                 if (!paths[paths.length - 1].endsWith('.d.ts'))
                     paths[paths.length - 1] += '.d.ts';
@@ -45,10 +48,10 @@ export class Jspack {
 
                 const file = this.m_FsFactory.buildFile(filePath);
                 let fileText = await file.readString();
-                fileText = await this.getFileContent(fileText, dirPath);
-                content += fileText + '\n';
-            } else if (line && line != Jspack.ignoreLine) {
-                content += line + '\n';
+                const fileContent = await this.getFileContent(fileText, dirPath);
+                content.push(...fileContent);
+            } else if (line && line != ignoreLine) {
+                content.push(line);
             }
         }
         return content;
@@ -63,14 +66,15 @@ export class Jspack {
      */
     public async getFileContent(fileContent: string, dirPath: string) {
         const arr = fileContent.split('\n');
-        let content = '';
+        let content = [];
         for (const line of arr) {
-            const regRes = line.match(Jspack.importReg);
-            if (regRes && regRes[1]) {
+            const regRes = line.match(importReg);
+            if (regRes?.[1]) {
                 const paths = regRes[1].split('/');
-                const dirExists = await this.m_FsFactory.buildDirectory(join(dirPath, ...paths)).exists();
+                const dirExists = await this.m_FsFactory.buildDirectory(dirPath, ...paths).exists();
                 if (dirExists) {
-                    content += await this.getDirContent(join(dirPath, ...paths)) + '\n';
+                    const dirContent = await this.getDirContent(join(dirPath, ...paths))
+                    content.push(...dirContent);
                 } else {
                     if (!paths[paths.length - 1].endsWith('.d.ts'))
                         paths[paths.length - 1] += '.d.ts';
@@ -82,14 +86,15 @@ export class Jspack {
                     const file = this.m_FsFactory.buildFile(path);
                     const fileExists = await file.exists();
                     if (!fileExists) {
-                        const regRes = line.match(Jspack.exportReg);
-                        if (regRes?.length && regRes[1].startsWith('lite-ts')) {
+                        const regRes = line.match(exportReg);
+                        if (regRes?.length && regRes?.[1].startsWith('lite-ts')) {
                             const exportDir = this.m_FsFactory.buildDirectory('node_modules', regRes[1], 'dist');
                             const isEexists = await exportDir.exists();
                             if (!isEexists)
                                 console.log(`无法处理 ${line}, 找不到文件: ${file.path}, 已跳过`);
 
-                            content += await this.getDirContent(join(exportDir.path)) + '\n';
+                            const dirContent = await this.getDirContent(join(exportDir.path));
+                            content.push(...dirContent);
                         } else {
                             console.log(`无法处理 ${line}, 找不到文件: ${file.path}, 已跳过`);
                         }
@@ -99,13 +104,13 @@ export class Jspack {
                     this.m_ParsedFiles.push(path);
                     let fileText = await file.readString();
                     if (fileText) {
-                        fileText = await this.getFileContent(fileText, dirPath);
-                        content += fileText + '\n';
+                        const fileContent = await this.getFileContent(fileText, dirPath);
+                        content.push(...fileContent);
                     }
                 }
-            } else if (line && line != Jspack.ignoreLine) {
-                content += line + '\n';
-            }
+            } else if (line && line != ignoreLine)
+                content.push(line);
+
         }
         return content;
     }
