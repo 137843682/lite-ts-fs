@@ -23,7 +23,7 @@ export class JsPack {
      * @param dirPath 目录地址
      * @returns 
      */
-    public async getDirContent(dirPath: string) {
+    private async getDirContent(dirPath: string) {
         const indexTsFile = this.m_FsFactory.buildFile(dirPath, 'index.d.ts');
         const dirExists = await indexTsFile.exists();
         if (!dirExists || this.m_ParsedFiles.includes(indexTsFile.path))
@@ -65,7 +65,7 @@ export class JsPack {
      * @param dirPath 
      * @returns 
      */
-    public async getFileContent(fileContent: string, dirPath: string) {
+    private async getFileContent(fileContent: string, dirPath: string) {
         const arr = fileContent.split('\n');
         let content = [];
         for (const line of arr) {
@@ -114,5 +114,22 @@ export class JsPack {
 
         }
         return content;
+    }
+
+    /**
+     * 构建
+     */
+    public async build() {
+        const res = await this.getDirContent('dist');
+        const pkg = await this.m_FsFactory.buildFile('package.json').read<{ name: string; }>();
+        await this.m_FsFactory.buildFile(`${pkg.name}.d.ts`).write(
+            res.join('\n').replace(/export\ /g, '')
+                .replace(/moment\.unitOfTime\.StartOf/g, 'string')
+        );
+
+        const licenseFile = this.m_FsFactory.buildFile(`${pkg.name}.min.js.LICENSE.txt`);
+        const exists = await licenseFile.exists();
+        if (exists)
+            await licenseFile.remove();
     }
 }
