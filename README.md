@@ -25,6 +25,6 @@ await dir.create(true); // 创建文件，参数为true时递归创建
 import { JsPack } from 'lite-ts-fs';
 
 const jsPack = new JsPack();
-await jsPack.build();
+await jsPack.pack();
 
 ```
