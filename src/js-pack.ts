@@ -80,11 +80,10 @@ export class JsPack {
                     if (!paths[paths.length - 1].endsWith('.d.ts'))
                         paths[paths.length - 1] += '.d.ts';
 
-                    const path = join(dirPath, ...paths);
-                    if (this.m_ParsedFiles.includes(path))
+                    const file = this.m_FsFactory.buildFile(dirPath, ...paths);
+                    if (this.m_ParsedFiles.includes(file.path))
                         continue;
 
-                    const file = this.m_FsFactory.buildFile(path);
                     const fileExists = await file.exists();
                     if (!fileExists) {
                         const regRes = line.match(exportReg);
@@ -102,7 +101,7 @@ export class JsPack {
                         continue;
                     }
 
-                    this.m_ParsedFiles.push(path);
+                    this.m_ParsedFiles.push(file.path);
                     let fileText = await file.readString();
                     if (fileText) {
                         const fileContent = await this.getFileContent(fileText, dirPath);
