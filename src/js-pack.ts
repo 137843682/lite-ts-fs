@@ -17,6 +17,24 @@ export class JsPack {
      * 已解析文件
      */
     private m_ParsedFiles: string[] = []
+
+    /**
+     * 打包
+     */
+    public async pack() {
+        const res = await this.getDirContent('dist');
+        const pkg = await this.m_FsFactory.buildFile('package.json').read<{ name: string; }>();
+        await this.m_FsFactory.buildFile(`${pkg.name}.d.ts`).write(
+            res.join('\n').replace(/export\ /g, '')
+                .replace(/moment\.unitOfTime\.StartOf/g, 'string')
+        );
+
+        const licenseFile = this.m_FsFactory.buildFile(`${pkg.name}.min.js.LICENSE.txt`);
+        const exists = await licenseFile.exists();
+        if (exists)
+            await licenseFile.remove();
+    }
+
     /**
      * 解析整个目录，从该目录底下的 index.d.ts 的 export 内容一个一个解析过去
      * 
@@ -115,20 +133,4 @@ export class JsPack {
         return content;
     }
 
-    /**
-     * 构建
-     */
-    public async build() {
-        const res = await this.getDirContent('dist');
-        const pkg = await this.m_FsFactory.buildFile('package.json').read<{ name: string; }>();
-        await this.m_FsFactory.buildFile(`${pkg.name}.d.ts`).write(
-            res.join('\n').replace(/export\ /g, '')
-                .replace(/moment\.unitOfTime\.StartOf/g, 'string')
-        );
-
-        const licenseFile = this.m_FsFactory.buildFile(`${pkg.name}.min.js.LICENSE.txt`);
-        const exists = await licenseFile.exists();
-        if (exists)
-            await licenseFile.remove();
-    }
 }
