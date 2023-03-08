@@ -22,14 +22,9 @@ await dir.create(true); // 创建文件，参数为true时递归创建
 ## 构建库.d.ts文件使用方法
 
 ```typescript
-import { Jspack,FileFactory } from 'lite-ts-fs';
+import { JsPack } from 'lite-ts-fs';
 
-const jspack = new JsPack();
-const content = await jspack.getDirContent('dist');
-const fileFactory = new FileFactory();
-const pkg = await fileFactory.buildFile('package.json').read<{ name: string; }>();
-await fileFactory.buildFile(`${pkg.name}.d.ts`).write(
-    content.join('\n').replace(/export\ /g, '')
-        .replace(/moment\.unitOfTime\.StartOf/g, 'string')
-);
+const jsPack = new JsPack();
+await jsPack.build();
+
 ```
