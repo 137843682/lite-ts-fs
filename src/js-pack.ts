@@ -5,7 +5,7 @@ import { FileFactoryBase } from './file-factory-base';
 
 const exportReg = /["|'](.*)["|']/;
 // 要过滤的行
-const ignoreLine = 'export {};';
+const ignoreReg = /export\s*\{\};/;
 const importReg = /import.*["|'](.*)["|']/;
 
 export class JsPack {
@@ -69,7 +69,7 @@ export class JsPack {
                 let fileText = await file.readString();
                 const fileContent = await this.getFileContent(fileText, dirPath);
                 content.push(...fileContent);
-            } else if (line && line != ignoreLine) {
+            } else if (line && !RegExp(ignoreReg).test(line)) {
                 content.push(line);
             }
         }
@@ -126,9 +126,9 @@ export class JsPack {
                         content.push(...fileContent);
                     }
                 }
-            } else if (line && line != ignoreLine)
+            } else if (line && !RegExp(ignoreReg).test(line)) {
                 content.push(line);
-
+            }
         }
         return content;
     }
