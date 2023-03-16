@@ -41,8 +41,10 @@ export class File extends FileEntryBase implements IFile {
     }
 
     public async write(v: any) {
-        if (typeof v == 'string')
-            await writeFile(this.path, v);
+        if (typeof v !== 'string')
+            v = JSON.stringify(v);
+
+        await writeFile(this.path, v);
     }
 
     protected async doCopyTo(opts: CopyOption) {
