@@ -1,3 +1,4 @@
+export * from './copy-option';
 export * from './file-factory';
 export * from './file-factory-base';
 export * from './i-directory';
