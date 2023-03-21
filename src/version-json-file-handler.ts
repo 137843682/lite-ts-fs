@@ -1,8 +1,7 @@
-import { HandlerBase } from './handler-base';
-
 import { IFile } from './i-file';
+import { VersionHandlerBase } from './version-handler-base';
 
-export class JsonFileHandler extends HandlerBase {
+export class VersionJsonFileHandler extends VersionHandlerBase {
     public constructor(
         private m_File: IFile,
         version: string

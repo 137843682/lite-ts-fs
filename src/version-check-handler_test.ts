@@ -1,17 +1,17 @@
 import { ok, strictEqual } from 'assert';
 
-import { CheckHandler as Self } from './check-handler';
-import { CORBase } from './cor-base';
+import { VersionCheckHandler as Self } from './version-check-handler';
+import { VersionHandlerBase } from './version-handler-base';
 
 let count = 0;
 
-class NextHandler extends CORBase {
+class NextHandler extends VersionHandlerBase {
     public async handle(): Promise<void> {
         count = 100;
     }
 }
 
-describe('src/check-handler.ts', () => {
+describe('src/version-check-handler_test.ts', () => {
     describe('.handle(): Promise<void>', () => {
         it('无效版本号', async () => {
             const self = new Self('a');
@@ -27,7 +27,7 @@ describe('src/check-handler.ts', () => {
 
         it('ok', async () => {
             await new Self('1.0.0').setNext(
-                new NextHandler()
+                new NextHandler('1.0.0')
             ).handle();
             strictEqual(count, 100);
         });
