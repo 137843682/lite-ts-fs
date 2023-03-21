@@ -1,10 +1,9 @@
-import { HandlerBase } from './handler-base';
-
 import { IFile } from './i-file';
+import { VersionHandlerBase } from './version-handler-base';
 
 const reg = /version-(\d+\.\d+\.\d+)-green/;
 
-export class ReadmeHandler extends HandlerBase {
+export class VersionReadmeHandler extends VersionHandlerBase {
     public constructor(
         private m_File: IFile,
         version: string,

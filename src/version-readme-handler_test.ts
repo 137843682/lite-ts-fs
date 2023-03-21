@@ -1,9 +1,9 @@
 import { Mock } from 'lite-ts-mock';
 
 import { File } from './file';
-import { ReadmeHandler } from './readme-handler';
+import { VersionReadmeHandler } from './version-readme-handler';
 
-describe('src/tool/version/readme-handler.ts', () => {
+describe('src/version-readme-handler.ts', () => {
     describe('.handle(): Promise<void>', () => {
         it('ok', async (): Promise<void> => {
             const mockFile = new Mock<File>();
@@ -15,7 +15,7 @@ describe('src/tool/version/readme-handler.ts', () => {
 
             mockFile.expected.write('# ![Version](https://img.shields.io/badge/version-1.1.2-green.svg)');
 
-            await new ReadmeHandler(mockFile.actual, '0.0.1').handle();
+            await new VersionReadmeHandler(mockFile.actual, '0.0.1').handle();
         });
     });
 });
