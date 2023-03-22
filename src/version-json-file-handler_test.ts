@@ -21,9 +21,11 @@ describe('src/version-json-file-handler.ts', (): void => {
             );
 
             const version = '0.0.1';
-            mockFile.expected.write({
-                version: '1.1.2'
-            });
+            mockFile.expected.write(
+                JSON.stringify({
+                    version: '1.1.2'
+                }, null, '\t'),
+            );
 
             await new VersionJsonFileHandler(mockFile.actual, version).handle();
         });

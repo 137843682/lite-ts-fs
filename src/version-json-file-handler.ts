@@ -18,6 +18,8 @@ export class VersionJsonFileHandler extends VersionHandlerBase {
             version: string;
         }>();
         entry.version = this.getVersion(entry.version);
-        await this.m_File.write(entry);
+        await this.m_File.write(
+            JSON.stringify(entry, null, '\t'),
+        );
     }
 }
