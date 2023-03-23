@@ -3,7 +3,7 @@ import { VersionCheckHandler } from './version-check-handler';
 import { VersionJsonFileHandler } from './version-json-file-handler';
 import { VersionReadmeHandler } from './version-readme-handler';
 
-export default function setVersion() {
+export default function tsServerVersion() {
     const ioFactory = new FileFactory();
     const readmeFile = ioFactory.buildFile(__dirname, '..', 'README.md');
     const packageJSONFile = ioFactory.buildFile(__dirname, '..', 'package.json');
