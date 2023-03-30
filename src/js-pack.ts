@@ -53,6 +53,9 @@ export class JsPack {
         const exportsArray = indexTsFileContent.split('\n');
         let content = [];
         for (const line of exportsArray) {
+            if (line.startsWith('export'))
+                continue;
+
             const regRes = line.match(exportReg);
             if (regRes?.[1]) {
                 const paths = regRes[1].split('/');
@@ -104,18 +107,7 @@ export class JsPack {
 
                     const fileExists = await file.exists();
                     if (!fileExists) {
-                        const regRes = line.match(exportReg);
-                        if (regRes?.length && regRes?.[1].startsWith('lite-ts')) {
-                            const exportDir = this.m_FsFactory.buildDirectory('node_modules', regRes[1], 'dist');
-                            const isEexists = await exportDir.exists();
-                            if (!isEexists)
-                                console.log(`无法处理 ${line}, 找不到文件: ${file.path}, 已跳过`);
-
-                            const dirContent = await this.getDirContent(join(exportDir.path));
-                            content.push(...dirContent);
-                        } else {
-                            console.log(`无法处理 ${line}, 找不到文件: ${file.path}, 已跳过`);
-                        }
+                        console.log(`无法处理 ${line}, 找不到文件: ${file.path}, 已跳过`);
                         continue;
                     }
 
