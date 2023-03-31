@@ -107,6 +107,7 @@ export class JsPack {
 
                     const fileExists = await file.exists();
                     if (!fileExists) {
+                        content.unshift(line);
                         console.log(`无法处理 ${line}, 找不到文件: ${file.path}, 已跳过`);
                         continue;
                     }
