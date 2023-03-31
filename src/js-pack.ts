@@ -5,7 +5,7 @@ import { FileFactoryBase } from './file-factory-base';
 
 const exportReg = /["|'](.*)["|']/;
 // 要过滤的行
-const ignoreReg = /export\s*\{\};/;
+const ignoreReg = /export\s*\{/;
 const importReg = /import.*["|'](.*)["|']/;
 
 export class JsPack {
@@ -53,7 +53,7 @@ export class JsPack {
         const exportsArray = indexTsFileContent.split('\n');
         let content = [];
         for (const line of exportsArray) {
-            if (line.startsWith('export'))
+            if (RegExp(ignoreReg).test(line))
                 continue;
 
             const regRes = line.match(exportReg);
