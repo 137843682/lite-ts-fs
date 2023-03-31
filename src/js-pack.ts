@@ -6,6 +6,7 @@ import { FileFactoryBase } from './file-factory-base';
 const exportReg = /["|'](.*)["|']/;
 // 要过滤的行
 const ignoreReg = /export\s*\{/;
+const importLibrary = /import\s\{([^{}]+)}\sfrom\s'(.+)';/;
 const importReg = /import.*["|'](.*)["|']/;
 
 export class JsPack {
@@ -13,16 +14,23 @@ export class JsPack {
      * 文件工厂
      */
     private m_FsFactory: FileFactoryBase = new FileFactory();
+
+    private m_ImportLibrary: { [library: string]: string[] } = {};
+
     /**
      * 已解析文件
      */
-    private m_ParsedFiles: string[] = []
+    private m_ParsedFiles: string[] = [];
+
 
     /**
      * 打包
      */
     public async pack() {
         const res = await this.getDirContent('dist');
+        Object.entries(this.m_ImportLibrary).forEach(([k, v]) => {
+            res.unshift(`import {${v.join(',')}} from "${k}";`);
+        })
         const pkg = await this.m_FsFactory.buildFile('package.json').read<{ name: string; }>();
         await this.m_FsFactory.buildFile(`${pkg.name}.d.ts`).write(
             res.join('\n').replace(/export\ /g, '')
@@ -107,8 +115,17 @@ export class JsPack {
 
                     const fileExists = await file.exists();
                     if (!fileExists) {
-                        content.unshift(line);
-                        console.log(`无法处理 ${line}, 找不到文件: ${file.path}, 已跳过`);
+                        const arr = line.match(importLibrary);
+                        if (!arr?.length) {
+                            console.log(`无法处理 ${line}, 找不到文件: ${file.path}, 已跳过`);
+                            continue;
+                        }
+                        arr[1].split(',').forEach(r => {
+                            this.m_ImportLibrary[arr[2]] ??= [];
+                            const index = this.m_ImportLibrary[arr[2]].findIndex(cr => cr == r);
+                            if (index == -1)
+                                this.m_ImportLibrary[arr[2]].push(r);
+                        })
                         continue;
                     }
 
