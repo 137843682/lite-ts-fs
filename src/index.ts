@@ -5,7 +5,6 @@ export * from './file-factory-base';
 export * from './i-directory';
 export * from './i-file';
 export * from './i-file-entry';
-export * from './js-pack';
 export * from './ts-server-version';
 export * from './version-check-handler';
 export * from './version-handler-base';

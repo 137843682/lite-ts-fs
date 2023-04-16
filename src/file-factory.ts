@@ -1,19 +1,19 @@
 import { join } from 'path';
 
-import { Directory } from './directory';
-import { File } from './file';
+import { FsDirectory } from './directory';
+import { FsFile } from './file';
 import { FileFactoryBase } from './file-factory-base';
 
-export class FileFactory extends FileFactoryBase {
+export class FsFileFactory extends FileFactoryBase {
     public buildDirectory(...paths: string[]) {
-        return new Directory(
+        return new FsDirectory(
             join(...paths),
             this,
         );
     }
 
     public buildFile(...paths: string[]) {
-        return new File(
+        return new FsFile(
             join(...paths),
             this,
         );

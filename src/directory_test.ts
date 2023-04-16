@@ -1,13 +1,14 @@
 import { notStrictEqual, strictEqual } from 'assert';
+import { mkdir } from 'fs/promises';
 import { join } from 'path';
 
-import { Directory as Self } from './directory';
-import { FileFactory } from './file-factory';
+import { FsDirectory as Self } from './directory';
+import { FsFileFactory } from './file-factory';
 
 describe('src/directory.ts', () => {
     describe('.copyTo(opts: string | string[] | CopyOption)', () => {
         it('ok', async () => {
-            const fsFactory = new FileFactory();
+            const fsFactory = new FsFileFactory();
             const self = new Self('src', fsFactory);
 
             const copyDir = new Self('src-copy', null);
@@ -26,6 +27,19 @@ describe('src/directory.ts', () => {
         it('ok', async () => {
             const dir = join('./test-dir');
             const self = new Self(dir, null);
+            await self.create();
+
+            const res = await self.exists();
+            strictEqual(res, true);
+
+            await self.remove();
+        });
+
+        it('已存在', async () => {
+            const dirPath = 'dir-exists';
+            await mkdir(dirPath);
+
+            const self = new Self(dirPath, null);
             await self.create();
 
             const res = await self.exists();
@@ -55,7 +69,7 @@ describe('src/directory.ts', () => {
 
     describe('.moveTo()', () => {
         it('ok', async () => {
-            const fsFactory = new FileFactory();
+            const fsFactory = new FsFileFactory();
             const sourceDir = new Self('test-dir-src', fsFactory);
             const sourceSubDir = new Self(
                 join(sourceDir.path, '1'),

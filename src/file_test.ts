@@ -1,7 +1,7 @@
 import { deepStrictEqual, strictEqual } from 'assert';
 import { join } from 'path';
 
-import { File as Self } from './file';
+import { FsFile as Self } from './file';
 
 describe('src/file.ts', () => {
     describe('.copyTo(opts: string | string[] | CopyOption)', () => {

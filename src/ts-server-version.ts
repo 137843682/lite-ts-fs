@@ -1,10 +1,10 @@
-import { FileFactory } from './file-factory';
+import { FsFileFactory } from './file-factory';
 import { VersionCheckHandler } from './version-check-handler';
 import { VersionJsonFileHandler } from './version-json-file-handler';
 import { VersionReadmeHandler } from './version-readme-handler';
 
 export function tsServerVersion() {
-    const ioFactory = new FileFactory();
+    const ioFactory = new FsFileFactory();
     const readmeFile = ioFactory.buildFile(__dirname, '..', '..', '..', 'README.md');
     const packageJSONFile = ioFactory.buildFile(__dirname, '..', '..', '..', 'package.json');
     const packageLockJSONFile = ioFactory.buildFile(__dirname, '..', '..', '..', 'package-lock.json');

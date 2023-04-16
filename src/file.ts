@@ -7,7 +7,7 @@ import { CopyOption } from './copy-option';
 import { FileEntryBase } from './file-entry-base';
 import { IFile } from './i-file';
 
-export class File extends FileEntryBase implements IFile {
+export class FsFile extends FileEntryBase implements IFile {
     private m_Ext: string;
     public get ext() {
         this.m_Ext ??= extname(this.path);
